@@ -1,0 +1,16 @@
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/settings_category_about_this_app">
+
+        <Preference
+            android:title="@string/settings_app_version"
+            android:key="app_version" />
+
+        <Preference android:title="@string/settings_oss_license">
+            <intent
+                android:targetClass="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+                android:targetPackage="yocxli.flipreminder" />
+        </Preference>
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>

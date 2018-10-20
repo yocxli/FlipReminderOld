@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">FlipReminder</string>
+    <string name="title_home">ホーム</string>
+    <string name="title_dashboard">ダッシュボード</string>
+    <string name="title_notifications">通知</string>
+
+    <string name="action_settings">設定</string>
+
+    <!-- settings -->
+    <string name="title_activity_settings">設定</string>
+    <string name="settings_category_about_this_app">このアプリについて</string>
+    <string name="settings_app_version">アプリバージョン</string>
+    <string name="settings_oss_license">オープンソースライセンス</string>
+
+</resources>
