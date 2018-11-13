@@ -28,7 +28,12 @@ dependencies {
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$rootProject.kotlinVersion"
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.room:room-runtime:2.1.0-alpha01'
+    annotationProcessor "androidx.room:room-compiler:2.1.0-alpha01" // use kapt for Kotlin
+
     testImplementation "junit:junit:$rootProject.junitVersion"
+    testImplementation 'androidx.room:room-testing:2.1.0-alpha01'
+
     androidTestImplementation 'androidx.test:runner:1.1.0-beta02'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-beta02'
 }
