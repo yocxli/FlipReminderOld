@@ -10,12 +10,11 @@ buildscript {
         // App dependencies
         kotlinVersion = '1.2.71'
 
-        // Unit tests
+        // Unit tests / Instrumented tests
         junitVersion = '4.12'
-
-        // Instrumented Test
-        testRunnerVersion = '1.0.2'
-        espressoVersion = '3.0.2'
+        androidxTestCoreVersion = '1.0.0'
+        androidxTestRunnerVersion = '1.1.0'
+        androidxTestEspressoVersion = '3.1.0'
     }
 
     repositories {
