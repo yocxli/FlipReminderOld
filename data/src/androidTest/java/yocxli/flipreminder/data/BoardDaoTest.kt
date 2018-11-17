@@ -27,7 +27,7 @@ class BoardDaoTest {
     }
 
     @After
-    fun closeDb() = database.close()
+    fun closeDb() {}
 
     @Test
     fun insertBoardAndFindById() {
