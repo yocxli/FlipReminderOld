@@ -33,7 +33,7 @@ dependencies {
 
     implementation "androidx.appcompat:appcompat:$rootProject.androidxAppCompatVersion"
     implementation 'androidx.room:room-runtime:2.1.0-alpha02'
-    kapt "androidx.room:room-compiler:2.1.0-alpha02" // use kapt for Kotlin
+    kapt 'androidx.room:room-compiler:2.1.0-alpha02' // use kapt for Kotlin
 
     testImplementation "junit:junit:$rootProject.junitVersion"
     testImplementation 'androidx.room:room-testing:2.1.0-alpha02'
@@ -41,4 +41,5 @@ dependencies {
     androidTestImplementation "androidx.test:runner:$rootProject.androidxTestRunnerVersion"
     androidTestImplementation "androidx.test:core:$rootProject.androidxTestCoreVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.androidxTestEspressoVersion"
+    androidTestImplementation "com.google.truth:truth:0.42"
 }
