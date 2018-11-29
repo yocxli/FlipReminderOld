@@ -9,6 +9,7 @@ buildscript {
 
         // App dependencies
         kotlinVersion = '1.2.71'
+        androidxAppCompatVersion = '1.0.2'
 
         // Unit tests / Instrumented tests
         junitVersion = '4.12'
