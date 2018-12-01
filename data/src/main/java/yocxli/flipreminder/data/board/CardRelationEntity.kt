@@ -12,7 +12,7 @@ import androidx.room.PrimaryKey
         ForeignKey(entity = CardEntity::class, parentColumns = ["id"], childColumns = ["card_id"], onDelete = ForeignKey.CASCADE)
     ])
 data class CardRelationEntity(
-    @PrimaryKey var id: Long = 0,
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
     @ColumnInfo(name = "board_id") var boardId: Long,
     @ColumnInfo(name = "card_id") var cardId: Long
 )

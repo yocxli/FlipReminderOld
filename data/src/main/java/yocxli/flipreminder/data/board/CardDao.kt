@@ -14,9 +14,10 @@ interface CardDao {
     fun getFlippedCards(): List<CardEntity>
 
     @Transaction
-    fun create(card: CardEntity, boardId: Long) {
+    fun create(card: CardEntity, boardId: Long): Long {
         val cardId = insert(card)
         addToBoard(CardRelationEntity(boardId = boardId, cardId = cardId))
+        return cardId
     }
 
 
