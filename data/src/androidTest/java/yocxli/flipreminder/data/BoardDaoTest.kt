@@ -1,5 +1,6 @@
 package yocxli.flipreminder.data
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
@@ -8,6 +9,7 @@ import org.junit.After
 
 import org.junit.Before
 import org.junit.Test
+import yocxli.flipreminder.data.board.BoardDao
 
 import yocxli.flipreminder.data.board.BoardDatabase
 import yocxli.flipreminder.data.board.BoardEntity
@@ -15,10 +17,12 @@ import yocxli.flipreminder.data.board.BoardEntity
 class BoardDaoTest {
 
     private lateinit var database: BoardDatabase
+    private lateinit var boardDao: BoardDao
 
     @Before
     fun initDb() {
         database = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(), BoardDatabase::class.java).build()
+        boardDao = database.boardDao()
     }
 
     @After
@@ -27,16 +31,16 @@ class BoardDaoTest {
 
     @Test
     fun listAll_hasNoRecord_returnsEmptyList() {
-        val result = database.boardDao().listAll()
+        val result = boardDao.listAll()
 
         assertThat(result).hasSize(0)
     }
 
     @Test
     fun listAll_hasOneRecord_returnsOneRecord() {
-        database.boardDao().create(DEFAULT_BOARD)
+        boardDao.create(DEFAULT_BOARD)
 
-        val result = database.boardDao().listAll()
+        val result = boardDao.listAll()
 
         assertThat(result).hasSize(1)
         assertThat(result[0]).isEqualTo(DEFAULT_BOARD)
@@ -44,11 +48,11 @@ class BoardDaoTest {
 
     @Test
     fun listAll_hasTwoOrMoreRecords_returnsAllRecords() {
-        database.boardDao().create(DEFAULT_BOARD)
+        boardDao.create(DEFAULT_BOARD)
         val secondBoard = BoardEntity(id = 2, name = "Second Board")
-        database.boardDao().create(secondBoard)
+        boardDao.create(secondBoard)
 
-        val result = database.boardDao().listAll()
+        val result = boardDao.listAll()
 
         assertThat(result).hasSize(2)
         assertThat(result[0]).isEqualTo(DEFAULT_BOARD)
@@ -57,18 +61,19 @@ class BoardDaoTest {
 
     @Test
     fun createAndFindById_succeedToCreateAndHasARecord_findByIdReturnsIt() {
-        database.boardDao().create(DEFAULT_BOARD)
-        val result = database.boardDao().findById(DEFAULT_BOARD_ID)
+        boardDao.create(DEFAULT_BOARD)
+        val result = boardDao.findById(DEFAULT_BOARD_ID)
 
         assertThat(result).isEqualTo(DEFAULT_BOARD)
     }
 
     @Test
     fun deleteAndFindById_succeedToDeleteAndHasNoRecord_findByIdReturnsNull() {
-        database.boardDao().create(DEFAULT_BOARD)
+        boardDao.create(DEFAULT_BOARD)
 
-        database.boardDao().delete(DEFAULT_BOARD)
-        val result = database.boardDao().findById(DEFAULT_BOARD_ID)
+        boardDao.delete(DEFAULT_BOARD)
+        val result = boardDao.findById(DEFAULT_BOARD_ID)
+
         assertThat(result).isNull()
     }
 
@@ -76,34 +81,38 @@ class BoardDaoTest {
     fun create_giveOnlyNameToEntity() {
         val givenEntity = BoardEntity(name = "Give Board Name")
 
-        val rowId = database.boardDao().create(givenEntity)
+        val rowId = boardDao.create(givenEntity)
 
-        val result = database.boardDao().findById(1)
+        val result = boardDao.findById(1)
         assertThat(result).isEqualTo(givenEntity.copy(id = rowId))
     }
 
     @Test
-    fun create_duplicateEntity_replaced() {
+    fun create_duplicateEntity_aborted() {
         val duplicateEntity = DEFAULT_BOARD.copy(createdDatetime = DEFAULT_BOARD.createdDatetime + 1)
-        database.boardDao().create(DEFAULT_BOARD)
+        boardDao.create(DEFAULT_BOARD)
 
-        database.boardDao().create(duplicateEntity)
-        val result = database.boardDao().findById(1)
+        try {
+            boardDao.create(duplicateEntity)
+        } catch (e: SQLiteConstraintException) {
+            // do nothing
+        }
+        val result = boardDao.findById(DEFAULT_BOARD_ID)
 
-        assertThat(result).isEqualTo(duplicateEntity)
-        assertThat(database.boardDao().count()).isEqualTo(1)
+        assertThat(result).isEqualTo(DEFAULT_BOARD)
+        assertThat(boardDao.count()).isEqualTo(1)
     }
 
     @Test
     fun count_noRecords_return0() {
-        assertThat(database.boardDao().count()).isEqualTo(0)
+        assertThat(boardDao.count()).isEqualTo(0)
     }
 
     @Test
     fun count_1Record_return1() {
-        database.boardDao().create(DEFAULT_BOARD)
+        boardDao.create(DEFAULT_BOARD)
 
-        val result = database.boardDao().count()
+        val result = boardDao.count()
 
         assertThat(result).isEqualTo(1)
     }
