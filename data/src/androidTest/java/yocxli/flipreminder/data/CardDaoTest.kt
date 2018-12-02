@@ -40,56 +40,51 @@ class CardDaoTest {
     @Test
     fun getCardsOf_hasOneRecord_returnsOneRecord() {
         val boardId = database.boardDao().create(DEFAULT_BOARD)
-        cardDao.create(DEFAULT_CARD, boardId)
+        cardDao.create(NON_FLIPPED_CARD_1, boardId)
 
         val result = cardDao.getCardsOf(boardId)
 
         assertThat(result).hasSize(1)
-        assertThat(result[0]).isEqualTo(DEFAULT_CARD)
+        assertThat(result[0]).isEqualTo(NON_FLIPPED_CARD_1)
     }
 
     @Test
     fun getCardsOf_hasTwoOrMoreRecords_returnsAllRecords() {
-        createTwoCardInDefaultBoard()
-        val flippedCard = CardEntity(label = "Flipped Card Label", isFlipped = true)
-        val flippedCardId = cardDao.create(flippedCard, DEFAULT_BOARD_ID)
+        populateTestData()
 
         val result = cardDao.getCardsOf(DEFAULT_BOARD_ID)
 
-        assertThat(result).hasSize(3)
-        assertThat(result[0]).isEqualTo(DEFAULT_CARD)
-        assertThat(result[1]).isEqualTo(SECOND_CARD)
-        assertThat(result[2]).isEqualTo(flippedCard.copy(id = flippedCardId))
+        assertThat(result).hasSize(4)
+        assertThat(result[0]).isEqualTo(NON_FLIPPED_CARD_1)
+        assertThat(result[1]).isEqualTo(NON_FLIPPED_CARD_2)
+        assertThat(result[2]).isEqualTo(FLIPPED_CARD_1)
+        assertThat(result[3]).isEqualTo(FLIPPED_CARD_2)
     }
 
     @Test
     fun getFlippedCardsOf_hasTwoOrMoreRecords_returnsAllRecords() {
-        createTwoCardInDefaultBoard()
-        val flippedCard1 = CardEntity(label = "Flipped 1", isFlipped = true)
-        val flippedCard2 = CardEntity(label = "Flipped 2", isFlipped = true)
-        val flippedCard1Id = cardDao.create(flippedCard1, DEFAULT_BOARD_ID)
-        val flippedCard2Id = cardDao.create(flippedCard2, DEFAULT_BOARD_ID)
+        populateTestData()
 
         val result = cardDao.getFlippedCardsOf(DEFAULT_BOARD_ID)
 
         assertThat(result).hasSize(2)
-        assertThat(result[0]).isEqualTo(flippedCard1.copy(id = flippedCard1Id))
-        assertThat(result[1]).isEqualTo(flippedCard2.copy(id = flippedCard2Id))
+        assertThat(result[0]).isEqualTo(FLIPPED_CARD_1)
+        assertThat(result[1]).isEqualTo(FLIPPED_CARD_2)
     }
 
     @Test
     fun insertAndFindById_succeedToCreateAndHasARecord_findByIdReturnsIt() {
-        cardDao.insert(DEFAULT_CARD)
+        cardDao.insert(NON_FLIPPED_CARD_1)
         val result = cardDao.findById(DEFAULT_CARD_ID)
 
-        assertThat(result).isEqualTo(DEFAULT_CARD)
+        assertThat(result).isEqualTo(NON_FLIPPED_CARD_1)
     }
 
     @Test
     fun deleteAndFindById_succeedToDeleteAndHasNoRecord_findByIdReturnsNull() {
-        cardDao.insert(DEFAULT_CARD)
+        cardDao.insert(NON_FLIPPED_CARD_1)
 
-        cardDao.delete(DEFAULT_CARD)
+        cardDao.delete(NON_FLIPPED_CARD_1)
         val result = cardDao.findById(DEFAULT_CARD_ID)
 
         assertThat(result).isNull()
@@ -107,8 +102,8 @@ class CardDaoTest {
 
     @Test
     fun insert_duplicateEntity_aborted() {
-        val duplicateEntity = DEFAULT_CARD.copy(createdDatetime = DEFAULT_CARD.createdDatetime + 1)
-        cardDao.insert(DEFAULT_CARD)
+        val duplicateEntity = NON_FLIPPED_CARD_1.copy(createdDatetime = NON_FLIPPED_CARD_1.createdDatetime + 1)
+        cardDao.insert(NON_FLIPPED_CARD_1)
 
         try {
             cardDao.insert(duplicateEntity)
@@ -117,12 +112,12 @@ class CardDaoTest {
         }
 
         val result = cardDao.findById(DEFAULT_CARD_ID)
-        assertThat(result).isEqualTo(DEFAULT_CARD)
+        assertThat(result).isEqualTo(NON_FLIPPED_CARD_1)
     }
 
     @Test
     fun update() {
-        cardDao.insert(DEFAULT_CARD)
+        cardDao.insert(NON_FLIPPED_CARD_1)
         val insertedBoardEntity = cardDao.findById(DEFAULT_CARD_ID)
         val updateBoardEntity = insertedBoardEntity?.copy(label = "Update Board Name")
         if (updateBoardEntity == null) {
@@ -139,12 +134,16 @@ class CardDaoTest {
 
     companion object {
         private const val DEFAULT_CARD_ID = 1L
-        private const val DEFAULT_CARD_LABEL = "Default Card Label"
-        private val DEFAULT_CARD = CardEntity(id = DEFAULT_CARD_ID, label = DEFAULT_CARD_LABEL)
+        private val NON_FLIPPED_CARD_1 = CardEntity(id = DEFAULT_CARD_ID, label = "Default Card Label")
 
         private const val SECOND_CARD_ID = 2L
-        private const val SECOND_CARD_LABEL = "Second Card Label"
-        private val SECOND_CARD = CardEntity(id = SECOND_CARD_ID, label = SECOND_CARD_LABEL)
+        private val NON_FLIPPED_CARD_2 = CardEntity(id = SECOND_CARD_ID, label = "Second Card Label")
+
+        private const val FLIPPED_CARD_1_ID = 3L
+        private val FLIPPED_CARD_1 = CardEntity(id = FLIPPED_CARD_1_ID, label = "Flipped Card Label", isFlipped = true)
+
+        private const val FLIPPED_CARD_2_ID = 4L
+        private val FLIPPED_CARD_2 = CardEntity(id = FLIPPED_CARD_2_ID, label = "Flipped Card Label", isFlipped = true)
 
         private const val DEFAULT_BOARD_ID = 1L
         private const val DEFAULT_BOARD_NAME = "Default Board Name"
@@ -152,9 +151,11 @@ class CardDaoTest {
         private val DEFAULT_BOARD = BoardEntity(id = DEFAULT_BOARD_ID, name = DEFAULT_BOARD_NAME, createdDatetime = DEFAULT_BOARD_CREATE_TIME)
     }
 
-    private fun createTwoCardInDefaultBoard() {
+    private fun populateTestData() {
         val boardId = database.boardDao().create(DEFAULT_BOARD)
-        cardDao.create(DEFAULT_CARD, boardId)
-        cardDao.create(SECOND_CARD, boardId)
+        cardDao.create(NON_FLIPPED_CARD_1, boardId)
+        cardDao.create(NON_FLIPPED_CARD_2, boardId)
+        cardDao.create(FLIPPED_CARD_1, boardId)
+        cardDao.create(FLIPPED_CARD_2, boardId)
     }
 }
