@@ -13,7 +13,7 @@ interface BoardDao {
     @Query("SELECT COUNT(*) FROM boards")
     fun count(): Int
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     fun create(board: BoardEntity): Long
 
     @Update
